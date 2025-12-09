@@ -129,9 +129,6 @@
   <ItemGroup>
     <ClCompile Include="FilmThicknessSmoother.cpp" />
   </ItemGroup>
-  <ItemGroup>
-    <Text Include="..\..\..\..\Documents\xwechat_files\wxid_z77k7vcm66xy11_7b7e\msg\file\2025-12\20251208\20251208\20251208_085731\input.txt" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
