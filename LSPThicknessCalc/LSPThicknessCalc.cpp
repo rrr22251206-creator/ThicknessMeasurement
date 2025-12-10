@@ -6,41 +6,39 @@ using namespace std;
 
 /*
  * ======================================================================================
- * Derivation of the Constraint Formula
+ * 核心公式推导 (Derivation of the Constraint Formula)
  * ======================================================================================
  *
- * 1. Interference Principle:
- *    In Low Coherence Spectral Interferometry (LSP), reflections from the top and bottom
- *    surfaces of a thin film interfere. The condition for interference extrema is:
- *    OPD = 2 * n * d = m * lambda
- *    Where:
- *      n: Refractive index
- *      d: Physical thickness
- *      m: Interference order (integer)
- *      lambda: Wavelength
+ * 1. 干涉原理 (Interference Principle):
+ *    在红外LSP（低相干光谱干涉）测厚中，薄膜上下表面的反射光发生干涉。
+ *    干涉极值条件满足光程差公式：
+ *    OPD = 2 * n * d = m * λ
+ *    其中：
+ *      n: 折射率 (Refractive index)
+ *      d: 物理厚度 (Physical thickness)
+ *      m: 干涉级次 (Interference order, 整数)
+ *      λ: 波长 (Wavelength)
  *
- * 2. Spectral Periodicity:
- *    In the wavelength domain, the spacing between adjacent interference fringes
- *    (Delta_lambda) is approximated by:
- *    Delta_lambda_period approx lambda^2 / (2 * n * d)
- *    This implies: As thickness (d) increases, fringes become denser (Delta_lambda decreases).
+ * 2. 光谱周期性 (Spectral Periodicity):
+ *    在波长域中，相邻两个干涉条纹（级次 m 和 m+1）之间的波长间隔 Δλ (自由光谱范围) 近似为：
+ *    Δλ_period ≈ λ^2 / (2 * n * d)
+ *    这意味着：厚度 d 越大，光谱上的条纹越密集（即 Δλ 越小）。
  *
- * 3. Nyquist Sampling Theorem:
- *    To resolve the sinusoidal interference fringes, the spectrometer's sampling frequency
- *    must be at least twice the signal frequency.
- *    The sampling interval is the optical resolution (delta_lambda).
- *    According to Nyquist:
- *    delta_lambda <= Delta_lambda_period / 2
+ * 3. 奈奎斯特采样定理 (Nyquist Sampling Theorem):
+ *    为了能够分辨出正弦形式的干涉条纹，光谱仪的采样频率必须至少是信号频率的2倍。
+ *    在光谱仪中，采样间隔就是光学分辨率 δλ (Resolution)。
+ *    根据奈奎斯特判据，分辨率必须小于等于条纹周期的一半：
+ *    δλ ≤ Δλ_period / 2
  *
- * 4. Final Calculation:
- *    Substituting Delta_lambda_period from step 2 into step 3:
- *    delta_lambda <= (lambda^2 / (2 * n * d)) / 2
- *    delta_lambda <= lambda^2 / (4 * n * d)
+ * 4. 最终公式推导 (Final Calculation):
+ *    将第2步的 Δλ_period 代入第3步：
+ *    δλ ≤ (λ^2 / (2 * n * d)) / 2
+ *    δλ ≤ λ^2 / (4 * n * d)
  *
- *    Rearranging to solve for maximum thickness d_max:
- *    4 * n * d * delta_lambda <= lambda^2
+ *    反转公式以求最大厚度 d_max：
+ *    4 * n * d * δλ ≤ λ^2
  *
- *    ==> d_max = lambda^2 / (4 * n * delta_lambda)
+ *    ==> d_max = λ^2 / (4 * n * δλ)
  *
  * ======================================================================================
  */
