@@ -131,10 +131,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="SpectrumLoader.h" />
     <ClInclude Include="ThicknessMeasurement.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="simple_test.cpp" />
+    <ClCompile Include="SpectrumLoader.cpp" />
+    <ClCompile Include="ThicknessMeasurement.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="spectrum.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
