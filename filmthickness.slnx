@@ -1,0 +1,7 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="filmthickness/filmthickness.vcxproj" Id="c4b843c1-18ee-4f87-8d94-a9251f21bdd3" />
+</Solution>
