@@ -45,5 +45,6 @@ int main()
     cout << "Estimated thickness : "
         << d_calc << " um" << endl;
 
+    system("pause"); // Keep console open
     return 0;
 }
