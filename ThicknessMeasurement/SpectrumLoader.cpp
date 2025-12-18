@@ -21,35 +21,33 @@ bool SpectrumLoader::load(
 
     std::string line;
     while (std::getline(fin, line)) {
-        if (line.empty() || line[0] == '#')
+        if (line.empty())
             continue;
 
-        // 支持 CSV / 空格
+        // 跳过非数字开头的行（标题 / header）
+        if (!(isdigit(line[0]) || line[0] == '.' || line[0] == '-'))
+            continue;
+
         for (char& c : line)
             if (c == ',') c = ' ';
 
         std::stringstream ss(line);
         double wl, I;
-        ss >> wl >> I;
-
-        if (ss.fail())
+        if (!(ss >> wl >> I))
             continue;
 
-        // 统一内部单位：nm
-        if (!wavelengthInNm)
-            wl *= 1e9;  // m → nm
-
+        // 统一：内部单位 = nm
         lambda.push_back(wl);
         intensity.push_back(I);
     }
+
+    std::cout << "[INFO] Loaded spectrum points: "
+        << lambda.size() << std::endl;
 
     if (lambda.size() < 16) {
         std::cerr << "[ERROR] Spectrum data too short\n";
         return false;
     }
-
-    std::cout << "[INFO] Loaded spectrum points: "
-        << lambda.size() << std::endl;
 
     return true;
 }
