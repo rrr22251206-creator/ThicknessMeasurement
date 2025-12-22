@@ -4,61 +4,68 @@
 
 using Eigen::VectorXd;
 
-// ================= 结构体定义 =================
-// 存储功率谱数据 (用于绘图或分析)
+// ================= Data Structures =================
+
 struct SpectrumData {
-    VectorXd z_axis; // 横坐标：光程差 (um)
-    VectorXd power;  // 纵坐标：信号强度
+    VectorXd z_axis;
+    VectorXd power;
 };
 
-// 存储峰值信息
 struct PeakInfo {
-    double z_opd;    // 峰值对应的光程差 (um)
-    double power;    // 峰值强度
+    double z_opd;
+    double power;
 };
 
-// ================= 常量声明 =================
+// Configuration struct for runtime tuning
+struct AnalysisConfig {
+    double z_search_min = 50.0;    // Min OPD (um)
+    double z_search_max = 1600.0;  // Max OPD (um) - Extended to cover total sum
+    double z_search_step = 0.2;    // Step size (um)
+    double peak_threshold = 0.05;  // Relative threshold (0.0~1.0). Low value to catch weak layers.
+    double min_peak_dist = 40.0;   // Min distance between peaks (um) to suppress side lobes
+    double additivity_tol = 30.0;  // Tolerance for A+B=C check (um)
+};
+
+// Result structure
+struct LayerStructure {
+    bool is_double_layer;
+    double opd_layer_1; // Signal A
+    double opd_layer_2; // Signal B
+    double opd_total;   // Signal C (Sum)
+    double error;       // |(A+B) - C|
+    double score;       // Confidence score
+};
+
+// ================= Constants =================
 extern const double MU;
 extern const double ETA;
 extern const double C;
 extern const double PHI0;
-extern const double DEFAULT_REFRACTIVE;
 
-extern const double LAMBDA_MIN;
-extern const double LAMBDA_MAX;
-extern const int    PIXEL_NUM;
+// ================= Algorithms =================
 
-extern const int    EMD_MAX_ITER;
-extern const double Z_SEARCH_MIN;
-extern const double Z_SEARCH_MAX;
-extern const double Z_SEARCH_STEP;
+// Preprocessing: Remove DC bias
+VectorXd emdFilter(const VectorXd& signal);
 
-// ================= 算法接口 =================
-
-VectorXd simulateInterferenceIntensity(
-    double A, double B, double z,
-    const VectorXd& lambda);
-
-VectorXd emdFilter(
-    const VectorXd& signal);
-
+// Domain conversion: Wavelength -> Wavenumber
 void lambdaToSigma(
     const VectorXd& lambda,
     const VectorXd& imf1,
     VectorXd& sigma,
     VectorXd& imf1_sigma);
 
-// 返回完整的功率谱数据
+// Power Spectrum (Lomb-Scargle / FFT)
 SpectrumData calculatePowerSpectrum(
     const VectorXd& sigma,
-    const VectorXd& imf1_sigma);
+    const VectorXd& imf1_sigma,
+    const AnalysisConfig& config);
 
-// 从谱图中寻找多个峰值
+// Peak Finding with suppression
 std::vector<PeakInfo> findPeaks(
     const SpectrumData& spectrum,
-    double thresholdRatio = 0.3); // 阈值系数，低于最大峰 30% 的峰会被忽略
+    const AnalysisConfig& config);
 
-// 简单的物理厚度换算辅助函数
-double opdToThickness(
-    double opd,
-    double refractive);
+// Blind Topology Solver (Auto-detect single/double layers)
+LayerStructure solveLayerTopology(
+    const std::vector<PeakInfo>& peaks,
+    const AnalysisConfig& config);
