@@ -1,26 +1,26 @@
-#pragma once
+ï»¿#pragma once
 #include <vector>
 #include <string>
 
 /**
  * @class SpectrumLoader
- * @brief Ô­Ê¼¹âÆ×Êı¾İ¼ÓÔØÄ£¿é£¨¹¤³ÌÊäÈë²ã£©
+ * @brief åŸå§‹å…‰è°±æ•°æ®åŠ è½½æ¨¡å—ï¼ˆå·¥ç¨‹è¾“å…¥å±‚ï¼‰
  *
- * Ö§³Ö TXT / CSV ÎÄ¼ş£¬¸ñÊ½Ê¾Àı£º
+ * æ”¯æŒ TXT / CSV æ–‡ä»¶ï¼Œæ ¼å¼ç¤ºä¾‹ï¼š
  *   500.0  12345
  *   500.2, 12410
  *
- * ²¨³¤µ¥Î»Ä¬ÈÏ nm
+ * æ³¢é•¿å•ä½é»˜è®¤ nm
  */
 class SpectrumLoader {
 public:
     /**
-     * @brief ¼ÓÔØ¹âÆ×Êı¾İÎÄ¼ş
-     * @param filename ÎÄ¼şÂ·¾¶
-     * @param lambda Êä³ö²¨³¤Êı×é£¨µ¥Î»£ºnm£©
-     * @param intensity Êä³öÇ¿¶ÈÊı×é
-     * @param wavelengthInNm ÊäÈëÊÇ·ñÎª nm£¨Ä¬ÈÏ true£©
-     * @return ÊÇ·ñ³É¹¦
+     * @brief åŠ è½½å…‰è°±æ•°æ®æ–‡ä»¶
+     * @param filename æ–‡ä»¶è·¯å¾„
+     * @param lambda è¾“å‡ºæ³¢é•¿æ•°ç»„ï¼ˆå•ä½ï¼šnmï¼‰
+     * @param intensity è¾“å‡ºå¼ºåº¦æ•°ç»„
+     * @param wavelengthInNm è¾“å…¥æ˜¯å¦ä¸º nmï¼ˆé»˜è®¤ trueï¼‰
+     * @return æ˜¯å¦æˆåŠŸ
      */
     static bool load(
         const std::string& filename,

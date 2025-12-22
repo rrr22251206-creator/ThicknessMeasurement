@@ -1,4 +1,4 @@
-#include "SpectrumLoader.h"
+ï»¿#include "SpectrumLoader.h"
 #include <fstream>
 #include <sstream>
 #include <iostream>
@@ -24,7 +24,7 @@ bool SpectrumLoader::load(
         if (line.empty())
             continue;
 
-        // Ìø¹ı·ÇÊı×Ö¿ªÍ·µÄĞĞ£¨±êÌâ / header£©
+        // è·³è¿‡éæ•°å­—å¼€å¤´çš„è¡Œï¼ˆæ ‡é¢˜ / headerï¼‰
         if (!(isdigit(line[0]) || line[0] == '.' || line[0] == '-'))
             continue;
 
@@ -36,7 +36,7 @@ bool SpectrumLoader::load(
         if (!(ss >> wl >> I))
             continue;
 
-        // Í³Ò»£ºÄÚ²¿µ¥Î» = nm
+        // ç»Ÿä¸€ï¼šå†…éƒ¨å•ä½ = nm
         lambda.push_back(wl);
         intensity.push_back(I);
     }
