@@ -3,5 +3,5 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
-  <Project Path="ThinFilmEstimator/ThinFilmEstimator.vcxproj" />
+  <Project Path="ThinFilmEstimator/ThinFilmEstimator.vcxproj" Id="b48ab594-4812-4dfb-857b-835bf7a8faa0" />
 </Solution>
