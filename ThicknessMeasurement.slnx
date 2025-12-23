@@ -1,0 +1,10 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Folder Name="/解决方案项/">
+    <File Path="spectrum.txt.bak" />
+  </Folder>
+  <Project Path="ThicknessMeasurement/ThicknessMeasurement.vcxproj" Id="2339d9d7-745b-4976-9bd1-3ab632a4cd0a" />
+</Solution>

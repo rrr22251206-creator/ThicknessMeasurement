@@ -361,3 +361,5 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/ThicknessMeasurement/spectrum.txt
+/ThicknessMeasurement/RCa22896
