@@ -68,7 +68,8 @@ SpectrumData calculatePowerSpectrum(const VectorXd& sigma, const VectorXd& imf1_
             double w = 2.0 * M_PI * z * sigma(k);
             double c = std::cos(w);
             double s = std::sin(w);
-            double val = imf1_sigma(k);
+            double val = imf1_sigma(k); // 直接使用原始信号，不加窗
+
             sum_c += val * c;
             sum_s += val * s;
             sum_cc += c * c;
@@ -124,13 +125,10 @@ std::vector<PeakInfo> findPeaks(const SpectrumData& spectrum, const AnalysisConf
     return final_peaks;
 }
 
-// ================= Topology Solver (Smart Scoring) =================
+// ================= 物理约束拓扑求解器 =================
 LayerStructure solveLayerTopology(const std::vector<PeakInfo>& peaks, const AnalysisConfig& config) {
     LayerStructure best_result;
     best_result.is_double_layer = false;
-    best_result.opd_layer_1 = 0;
-    best_result.opd_layer_2 = 0;
-    best_result.opd_total = 0;
     best_result.error = 99999.0;
     best_result.score = -1.0;
 
@@ -144,34 +142,57 @@ LayerStructure solveLayerTopology(const std::vector<PeakInfo>& peaks, const Anal
         return best_result;
     }
 
-    // Iterate through all pairs to find A + B = C
+    // 1. 找到全局最强峰 (Dominant Peak)
+    // 物理公理：在高折射率差的薄膜中，最强的干涉峰通常对应某个单层的物理厚度，
+    // 而不是两层叠加的和频（和频能量衰减大）。
+    double max_peak_power = -1.0;
+    double dominant_opd = -1.0;
+    for (const auto& p : peaks) {
+        if (p.power > max_peak_power) {
+            max_peak_power = p.power;
+            dominant_opd = p.z_opd;
+        }
+    }
+
+    // 2. 遍历寻找 A + B = C
+    const double sigma = 15.0;
+
     for (int i = 0; i < n; ++i) {
         for (int j = i + 1; j < n; ++j) {
             double sum = peaks[i].z_opd + peaks[j].z_opd;
 
-            // Check if 'sum' exists in other peaks
             for (int k = 0; k < n; ++k) {
-                // Constraints: 
-                // 1. Total must be distinct from components
+                // 基本约束
                 if (k == i || k == j) continue;
-                // 2. Total must be larger than components (Physics)
                 if (peaks[k].z_opd <= peaks[i].z_opd || peaks[k].z_opd <= peaks[j].z_opd) continue;
 
                 double diff = std::abs(peaks[k].z_opd - sum);
 
                 if (diff < config.additivity_tol) {
-                    // --- SCORING LOGIC ---
-                    // We value HIGH INTENSITY and LOW ERROR.
-                    // Total Power = P_A + P_B + P_Total
+
+                    // --- 评分逻辑优化 ---
                     double total_power = peaks[i].power + peaks[j].power + peaks[k].power;
+                    double gaussian_penalty = std::exp(-(diff * diff) / (2.0 * sigma * sigma));
+                    double current_score = total_power * gaussian_penalty;
 
-                    // Penalty Factor: 1.0 at 0 error, decaying linearly to 0.5 at max tolerance
-                    double error_penalty = 1.0 - (diff / config.additivity_tol) * 0.5;
-                    if (error_penalty < 0.1) error_penalty = 0.1; // Safety floor
+                    // --- 【关键逻辑】物理角色判定 ---
+                    bool component_is_dominant =
+                        (std::abs(peaks[i].z_opd - dominant_opd) < 1.0) ||
+                        (std::abs(peaks[j].z_opd - dominant_opd) < 1.0);
 
-                    double current_score = total_power * error_penalty;
+                    bool sum_is_dominant =
+                        (std::abs(peaks[k].z_opd - dominant_opd) < 1.0);
 
-                    // Update if this combination is better
+                    // 规则 1: 如果 Total Sum 是最强峰，这在物理上极不可能 (除非是特殊谐振腔)
+                    // 我们对其进行严厉惩罚 (或者直接 continue 跳过)
+                    if (sum_is_dominant) {
+                        current_score *= 0.001; // 惩罚 1000 倍
+                    }
+                    // 规则 2: 如果 Layer 1 或 Layer 2 是最强峰，这非常合理，给予奖励
+                    else if (component_is_dominant) {
+                        current_score *= 10.0;  // 奖励 10 倍
+                    }
+
                     if (current_score > best_result.score) {
                         best_result.is_double_layer = true;
                         best_result.opd_layer_1 = peaks[i].z_opd;
@@ -185,16 +206,10 @@ LayerStructure solveLayerTopology(const std::vector<PeakInfo>& peaks, const Anal
         }
     }
 
-    // Fallback: If no double layer found, return the strongest peak as single layer
+    // 单层回退
     if (!best_result.is_double_layer && n > 0) {
-        double max_p = -1;
-        for (const auto& p : peaks) {
-            if (p.power > max_p) {
-                max_p = p.power;
-                best_result.opd_layer_1 = p.z_opd;
-                best_result.opd_total = p.z_opd;
-            }
-        }
+        best_result.opd_layer_1 = dominant_opd;
+        best_result.opd_total = dominant_opd;
         best_result.error = 0.0;
     }
 
