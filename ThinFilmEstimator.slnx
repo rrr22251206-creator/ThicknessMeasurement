@@ -3,5 +3,5 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
-  <Project Path="LSPThicknessCalc/LSPThicknessCalc.vcxproj" Id="8df476ae-f028-4cf5-953c-ed3c13fb9b45" />
+  <Project Path="ThinFilmEstimator/ThinFilmEstimator.vcxproj" Id="b48ab594-4812-4dfb-857b-835bf7a8faa0" />
 </Solution>
